@@ -18,23 +18,21 @@ Map<String, dynamic> _versionAt(Map<String, dynamic> meta, int index) {
 
 void main() {
   final Db db = Db('mongodb://localhost:27017/dart_pub_test');
-  late HttpServer server;
+  HttpServer? server;
 
   setUpAll(() async {
     await db.open();
   });
 
   Future<Map<String, dynamic>> readMeta(String name) async {
-    final res =
-        await db.collection(packageCollection).findOne(where.eq('name', name));
+    final res = await db.collection(packageCollection).findOne(where.eq('name', name));
     res!.remove('_id'); // TODO: null
     return res;
   }
 
   final Map<String, String> pubspecCache = {};
 
-  Future<String?> readFile(
-      String package, String version, String filename) async {
+  Future<String?> readFile(String package, String version, String filename) async {
     final key = package + version + filename;
     if (pubspecCache[key] == null) {
       final filePath = path.absolute('test/fixtures', package, version, filename);
@@ -59,7 +57,8 @@ void main() {
     });
 
     tearDownAll(() async {
-      await server.close();
+      await server?.close();
+      server = null;
     });
 
     test('fresh', () async {
@@ -85,8 +84,7 @@ void main() {
         const DeepCollectionEquality().equals(item, {
           'version': version,
           'pubspecYaml': await readFile(package0, version, 'pubspec.yaml'),
-          'pubspec':
-              loadYamlAsMap(await readFile(package0, version, 'pubspec.yaml')),
+          'pubspec': loadYamlAsMap(await readFile(package0, version, 'pubspec.yaml')),
           'readme': await readFile(package0, version, 'README.md'),
           'changelog': await readFile(package0, version, 'CHANGELOG.md'),
           'uploader': email0,
@@ -136,8 +134,7 @@ void main() {
         const DeepCollectionEquality().equals(item, {
           'version': version,
           'pubspecYaml': await readFile(package0, version, 'pubspec.yaml'),
-          'pubspec':
-              loadYamlAsMap(await readFile(package0, version, 'pubspec.yaml')),
+          'pubspec': loadYamlAsMap(await readFile(package0, version, 'pubspec.yaml')),
           'uploader': email0,
         }),
         true,
@@ -154,7 +151,8 @@ void main() {
     });
 
     tearDownAll(() async {
-      await server.close();
+      await server?.close();
+      server = null;
     });
 
     test('existing at local', () async {
@@ -166,28 +164,22 @@ void main() {
         const DeepCollectionEquality().equals(body, {
           'name': 'package_0',
           'latest': {
-            'archive_url':
-                '$pubHostedUrl/packages/package_0/versions/0.0.2.tar.gz',
-            'pubspec': loadYamlAsMap(
-                await readFile('package_0', '0.0.2', 'pubspec.yaml')),
-            'version': '0.0.2'
+            'archive_url': '$pubHostedUrl/packages/package_0/versions/0.0.2.tar.gz',
+            'pubspec': loadYamlAsMap(await readFile('package_0', '0.0.2', 'pubspec.yaml')),
+            'version': '0.0.2',
           },
           'versions': [
             {
-              'archive_url':
-                  '$pubHostedUrl/packages/package_0/versions/0.0.1.tar.gz',
-              'pubspec': loadYamlAsMap(
-                  await readFile('package_0', '0.0.1', 'pubspec.yaml')),
-              'version': '0.0.1'
+              'archive_url': '$pubHostedUrl/packages/package_0/versions/0.0.1.tar.gz',
+              'pubspec': loadYamlAsMap(await readFile('package_0', '0.0.1', 'pubspec.yaml')),
+              'version': '0.0.1',
             },
             {
-              'archive_url':
-                  '$pubHostedUrl/packages/package_0/versions/0.0.2.tar.gz',
-              'pubspec': loadYamlAsMap(
-                  await readFile('package_0', '0.0.2', 'pubspec.yaml')),
-              'version': '0.0.2'
-            }
-          ]
+              'archive_url': '$pubHostedUrl/packages/package_0/versions/0.0.2.tar.gz',
+              'pubspec': loadYamlAsMap(await readFile('package_0', '0.0.2', 'pubspec.yaml')),
+              'version': '0.0.2',
+            },
+          ],
         }),
         true,
       );
@@ -217,7 +209,8 @@ void main() {
     });
 
     tearDownAll(() async {
-      await server.close();
+      await server?.close();
+      server = null;
     });
 
     test('existing at local', () async {
@@ -227,11 +220,9 @@ void main() {
       final body = json.decode(res.body) as Map<String, dynamic>;
       expect(
         const DeepCollectionEquality().equals(body, {
-          'archive_url':
-              '$pubHostedUrl/packages/package_0/versions/0.0.1.tar.gz',
-          'pubspec': loadYamlAsMap(
-              await readFile('package_0', '0.0.1', 'pubspec.yaml')),
-          'version': '0.0.1'
+          'archive_url': '$pubHostedUrl/packages/package_0/versions/0.0.1.tar.gz',
+          'pubspec': loadYamlAsMap(await readFile('package_0', '0.0.1', 'pubspec.yaml')),
+          'version': '0.0.1',
         }),
         true,
       );
@@ -244,11 +235,9 @@ void main() {
       final body = json.decode(res.body) as Map<String, dynamic>;
       expect(
         const DeepCollectionEquality().equals(body, {
-          'archive_url':
-              '$pubHostedUrl/packages/package_0/versions/0.0.3+1.tar.gz',
-          'pubspec': loadYamlAsMap(
-              await readFile('package_0', '0.0.3+1', 'pubspec.yaml')),
-          'version': '0.0.3+1'
+          'archive_url': '$pubHostedUrl/packages/package_0/versions/0.0.3+1.tar.gz',
+          'pubspec': loadYamlAsMap(await readFile('package_0', '0.0.3+1', 'pubspec.yaml')),
+          'version': '0.0.3+1',
         }),
         true,
       );
@@ -281,27 +270,28 @@ void main() {
     });
 
     tearDownAll(() async {
-      await server.close();
+      await server?.close();
+      server = null;
     });
 
     group('add', () {
       test('already exists', () async {
-        final result = await pubUploader(package0, 'add', email0);
-        expect(result.stderr, contains('email already exists'));
+        final response = await addUploader(package0, email0);
+        expect(apiErrorMessage(response), contains('email already exists'));
 
         final meta = await readMeta(package0);
         expect(meta['uploaders'], unorderedEquals([email0]));
       });
 
       test('success', () async {
-        var result = await pubUploader(package0, 'add', email1);
-        expect(result.stderr, '');
+        var response = await addUploader(package0, email1);
+        expect(response.statusCode, HttpStatus.ok);
 
         var meta = await readMeta(package0);
         expect(meta['uploaders'], unorderedEquals([email0, email1]));
 
-        result = await pubUploader(package0, 'add', email2);
-        expect(result.stderr, '');
+        response = await addUploader(package0, email2);
+        expect(response.statusCode, HttpStatus.ok);
 
         meta = await readMeta(package0);
         expect(meta['uploaders'], unorderedEquals([email0, email1, email2]));
@@ -310,22 +300,22 @@ void main() {
 
     group('remove', () {
       test('not in uploader', () async {
-        final result = await pubUploader(package0, 'remove', email3);
-        expect(result.stderr, contains('email not uploader'));
+        final response = await removeUploader(package0, email3);
+        expect(apiErrorMessage(response), contains('email not uploader'));
 
         final meta = await readMeta(package0);
         expect(meta['uploaders'], unorderedEquals([email0, email1, email2]));
       });
 
       test('success', () async {
-        var result = await pubUploader(package0, 'remove', email2);
-        expect(result.stderr, '');
+        var response = await removeUploader(package0, email2);
+        expect(response.statusCode, HttpStatus.ok);
 
         var meta = await readMeta(package0);
         expect(meta['uploaders'], unorderedEquals([email0, email1]));
 
-        result = await pubUploader(package0, 'remove', email1);
-        expect(result.stderr, '');
+        response = await removeUploader(package0, email1);
+        expect(response.statusCode, HttpStatus.ok);
 
         meta = await readMeta(package0);
         expect(meta['uploaders'], unorderedEquals([email0]));
@@ -334,22 +324,23 @@ void main() {
 
     group('permission', () {
       setUpAll(() async {
-        await server.close();
+        await server?.close();
         server = await createServer(email1);
       });
 
       tearDownAll(() async {
-        await server.close();
+        await server?.close();
+        server = null;
       });
 
       test('add', () async {
-        final result = await pubUploader(package0, 'add', email0);
-        expect(result.stderr, contains('no permission'));
+        final response = await addUploader(package0, email0);
+        expect(apiErrorMessage(response), contains('no permission'));
       });
 
       test('remove', () async {
-        final result = await pubUploader(package0, 'remove', email0);
-        expect(result.stderr, contains('no permission'));
+        final response = await removeUploader(package0, email0);
+        expect(apiErrorMessage(response), contains('no permission'));
       });
     });
   });
@@ -362,33 +353,37 @@ void main() {
     });
 
     tearDownAll(() async {
-      await server.close();
+      await server?.close();
+      server = null;
     });
 
     group('v', () {
       test('<1.0.0', () async {
         final res = await http.Client().send(
-            http.Request('GET', baseUri.resolve('/badge/v/$package0'))
-              ..followRedirects = false);
+          http.Request('GET', baseUri.resolve('/badge/v/$package0'))..followRedirects = false,
+        );
         expect(res.statusCode, HttpStatus.found);
-        expect(res.headers[HttpHeaders.locationHeader],
-            'https://img.shields.io/static/v1?label=unpub&message=0.0.1&color=orange');
+        expect(
+          res.headers[HttpHeaders.locationHeader],
+          'https://img.shields.io/static/v1?label=unpub&message=0.0.1&color=orange',
+        );
       });
 
       test('>=1.0.0', () async {
         await pubPublish(package0, '1.0.0');
 
         final res = await http.Client().send(
-            http.Request('GET', baseUri.resolve('/badge/v/$package0'))
-              ..followRedirects = false);
+          http.Request('GET', baseUri.resolve('/badge/v/$package0'))..followRedirects = false,
+        );
         expect(res.statusCode, HttpStatus.found);
-        expect(res.headers[HttpHeaders.locationHeader],
-            'https://img.shields.io/static/v1?label=unpub&message=1.0.0&color=blue');
+        expect(
+          res.headers[HttpHeaders.locationHeader],
+          'https://img.shields.io/static/v1?label=unpub&message=1.0.0&color=blue',
+        );
       });
 
       test('package not exists', () async {
-        final res =
-            await http.get(baseUri.resolve('/badge/v/$notExistingPacakge'));
+        final res = await http.get(baseUri.resolve('/badge/v/$notExistingPacakge'));
         expect(res.statusCode, HttpStatus.notFound);
       });
     });
@@ -396,16 +391,17 @@ void main() {
     group('d', () {
       test('correct download count', () async {
         final res = await http.Client().send(
-            http.Request('GET', baseUri.resolve('/badge/d/$package0'))
-              ..followRedirects = false);
+          http.Request('GET', baseUri.resolve('/badge/d/$package0'))..followRedirects = false,
+        );
         expect(res.statusCode, HttpStatus.found);
-        expect(res.headers[HttpHeaders.locationHeader],
-            'https://img.shields.io/static/v1?label=downloads&message=0&color=blue');
+        expect(
+          res.headers[HttpHeaders.locationHeader],
+          'https://img.shields.io/static/v1?label=downloads&message=0&color=blue',
+        );
       });
 
       test('package not exists', () async {
-        final res =
-            await http.get(baseUri.resolve('/badge/d/$notExistingPacakge'));
+        final res = await http.get(baseUri.resolve('/badge/d/$notExistingPacakge'));
         expect(res.statusCode, HttpStatus.notFound);
       });
     });

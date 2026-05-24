@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
@@ -7,8 +8,9 @@ import 'package:unpub/unpub.dart' as unpub;
 
 const notExistingPacakge = 'not_existing_package';
 final baseDir = path.absolute('unpub-packages');
-const pubHostedUrl = 'http://localhost:4000';
-final baseUri = Uri.parse(pubHostedUrl);
+
+late String pubHostedUrl;
+late Uri baseUri;
 
 const package0 = 'package_0';
 const package1 = 'package_1';
@@ -28,31 +30,54 @@ Future<HttpServer> createServer(String opEmail) async {
     overrideUploaderEmail: opEmail,
   );
 
-  final server = await app.serve('0.0.0.0', 4000);
+  final server = await app.serve('127.0.0.1', 0);
+  pubHostedUrl = 'http://127.0.0.1:${server.port}';
+  baseUri = Uri.parse(pubHostedUrl);
   return server;
 }
 
 Future<http.Response> getVersions(String package) {
-  package = Uri.encodeComponent(package);
-  return http.get(baseUri.resolve('/api/packages/$package'));
+  final encodedPackage = Uri.encodeComponent(package);
+  return http.get(baseUri.resolve('/api/packages/$encodedPackage'));
 }
 
 Future<http.Response> getSpecificVersion(String package, String version) {
-  package = Uri.encodeComponent(package);
-  version = Uri.encodeComponent(version);
-  return http.get(baseUri.resolve('/api/packages/$package/versions/$version'));
+  final encodedPackage = Uri.encodeComponent(package);
+  final encodedVersion = Uri.encodeComponent(version);
+  return http.get(baseUri.resolve('/api/packages/$encodedPackage/versions/$encodedVersion'));
 }
 
 Future<ProcessResult> pubPublish(String name, String version) {
-  return Process.run('dart', ['pub', 'publish', '--force'],
-      workingDirectory: path.absolute('test/fixtures', name, version),
-      environment: {'PUB_HOSTED_URL': pubHostedUrl});
+  return Process.run(
+    'dart',
+    ['pub', 'publish', '--force'],
+    workingDirectory: path.absolute('test/fixtures', name, version),
+    environment: {'PUB_HOSTED_URL': pubHostedUrl},
+  );
 }
 
-Future<ProcessResult> pubUploader(String name, String operation, String email) {
-  assert(['add', 'remove'].contains(operation), 'operation error');
+String apiErrorMessage(http.Response response) {
+  try {
+    final body = json.decode(response.body) as Map<String, dynamic>;
+    final error = body['error'];
+    if (error is Map) {
+      return error['message'] as String? ?? response.body;
+    }
+  } catch (_) {}
+  return response.body;
+}
 
-  return Process.run('dart', ['pub', 'uploader', operation, email],
-      workingDirectory: path.absolute('test/fixtures', name, '0.0.1'),
-      environment: {'PUB_HOSTED_URL': pubHostedUrl});
+Future<http.Response> addUploader(String name, String email) {
+  return http.post(
+    baseUri.resolve('/api/packages/${Uri.encodeComponent(name)}/uploaders'),
+    body: {'email': email},
+  );
+}
+
+Future<http.Response> removeUploader(String name, String email) {
+  return http.delete(
+    baseUri.resolve(
+      '/api/packages/${Uri.encodeComponent(name)}/uploaders/${Uri.encodeComponent(email)}',
+    ),
+  );
 }
