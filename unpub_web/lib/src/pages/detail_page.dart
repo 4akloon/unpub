@@ -7,6 +7,7 @@ import 'package:unpub_api/models.dart';
 import 'package:unpub_web/src/app_state.dart';
 import 'package:unpub_web/src/services/api_service.dart';
 import 'package:unpub_web/src/widgets/layout.dart';
+import 'package:unpub_web/src/widgets/loading_placeholder.dart';
 
 class DetailPage extends StatefulComponent {
   const DetailPage({required this.state, super.key});
@@ -139,7 +140,7 @@ class _DetailPageState extends State<DetailPage> with PreloadStateMixin {
 
     final package = _package;
     if (package == null) {
-      return fragment([]);
+      return pageLoadingPlaceholder();
     }
 
     final dateFormat = DateFormat.yMMMd();

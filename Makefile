@@ -8,7 +8,7 @@ dev-down:
 
 dev:
 	@test -f unpub_web/web/main.clients.dart.js || $(MAKE) build-web
-	dart run unpub/bin/unpub.dart -p $(PORT)
+	UPLOADER_EMAIL=test@local.dev dart run unpub/bin/unpub.dart -p $(PORT)
 
 build-web:
 	cd unpub_web && dart run build_runner build && dart run tool/build_client_js.dart

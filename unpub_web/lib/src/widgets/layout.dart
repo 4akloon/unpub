@@ -142,10 +142,6 @@ class SiteFooter extends StatelessComponent {
 
   @override
   Component build(BuildContext context) {
-    if (AppState.instance.loading) {
-      return fragment([]);
-    }
-
     return footer(
       classes: 'site-footer',
       [

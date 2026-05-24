@@ -5,6 +5,7 @@ import 'package:unpub_api/models.dart';
 import 'package:unpub_web/src/app_state.dart';
 import 'package:unpub_web/src/services/api_service.dart';
 import 'package:unpub_web/src/widgets/layout.dart';
+import 'package:unpub_web/src/widgets/loading_placeholder.dart';
 
 class HomePage extends StatefulComponent {
   const HomePage({super.key});
@@ -45,7 +46,7 @@ class _HomePageState extends State<HomePage> with PreloadStateMixin {
   Component build(BuildContext context) {
     final data = _data;
     if (data == null) {
-      return fragment([]);
+      return pageLoadingPlaceholder();
     }
 
     return mainElement(

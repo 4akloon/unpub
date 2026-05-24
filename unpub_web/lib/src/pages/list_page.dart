@@ -8,6 +8,7 @@ import 'package:unpub_api/models.dart';
 import 'package:unpub_web/src/app_state.dart';
 import 'package:unpub_web/src/services/api_service.dart';
 import 'package:unpub_web/src/widgets/layout.dart';
+import 'package:unpub_web/src/widgets/loading_placeholder.dart';
 
 class ListPage extends StatefulComponent {
   const ListPage({required this.state, super.key});
@@ -114,7 +115,7 @@ class _ListPageState extends State<ListPage> with PreloadStateMixin {
   Component build(BuildContext context) {
     final data = _data;
     if (data == null) {
-      return fragment([]);
+      return pageLoadingPlaceholder();
     }
 
     final dateFormat = DateFormat.yMMMd();

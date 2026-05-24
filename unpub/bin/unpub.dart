@@ -41,6 +41,7 @@ Future<void> main(List<String> args) async {
     metaStore: unpub.MongoStore(db),
     packageStore: unpub.FileStore(baseDir),
     proxyOrigin: proxyOrigin.trim().isEmpty ? null : Uri.parse(proxyOrigin),
+    overrideUploaderEmail: Platform.environment['UPLOADER_EMAIL'],
   );
 
   try {
