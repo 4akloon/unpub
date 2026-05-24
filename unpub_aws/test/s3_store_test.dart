@@ -28,32 +28,32 @@ void main() async {
     });
 
     test('aws-credentials-manual', () async {
-      var creds = AwsCredentials(
+      final creds = AwsCredentials(
           awsAccessKeyId: 'specialKey', awsSecretAccessKey: 'specialSecret');
       expect(creds.awsAccessKeyId, 'specialKey');
       expect(creds.awsSecretAccessKey, 'specialSecret');
     });
 
     test('aws-credentials-env', () async {
-      var credMap = {
+      final credMap = {
         'AWS_ACCESS_KEY_ID': 'special-key-id',
         'AWS_SECRET_ACCESS_KEY': 'special-access-key',
       };
-      var creds = await AwsCredentials(environment: credMap);
+      final creds = AwsCredentials(environment: credMap);
       expect(creds.awsAccessKeyId, credMap['AWS_ACCESS_KEY_ID']);
       expect(creds.awsSecretAccessKey, credMap['AWS_SECRET_ACCESS_KEY']);
     });
 
     test('aws-credentials-ecs-container-iam', () async {
-      var credMap = {
+      final credMap = {
         'AWS_CONTAINER_CREDENTIALS_RELATIVE_URI': 'special-access-key',
       };
-      Map<String, String> containerCredentials = {
+      final Map<String, String> containerCredentials = {
         'AccessKeyId': 'container-creds-key',
         'SecretAccessKey': 'container-creds-secret',
         'Token': 'container-creds-token'
       };
-      var creds = await AwsCredentials(
+      final creds = AwsCredentials(
           environment: credMap, containerCredentials: containerCredentials);
 
       expect(creds.awsAccessKeyId, containerCredentials['AccessKeyId']);
@@ -63,7 +63,7 @@ void main() async {
 
     test('upload-download-default-path', () async {
       await testS3Store.upload('test_package', '1.0.0', testPackageData);
-      var pkg1 =
+      final pkg1 =
           await readByteStream(testS3Store.download('test_package', '1.0.0'));
       expect(pkg1, testPackageData);
     });
@@ -75,23 +75,28 @@ void main() async {
           newFilePathFunc().call('test_package2', '2.0.0'));
 
       await testS3Store.upload('test_package', '1.0.0', testPackageData2);
-      var pkg2 =
+      final pkg2 =
           await readByteStream(testS3Store.download('test_package', '1.0.0'));
       expect(pkg2, testPackageData2, reason: 'tar.gz content did not match');
     });
 
     test('require-default-aws-region', () async {
-      var storePass =
+      final storePass =
           S3Store('dart-pub-test', region: 'us-east-1', credentials: mockCreds);
       expect(storePass.region, 'us-east-1');
 
       // Don't run tests with AWS environment set variables please
       expect(Platform.environment['AWS_DEFAULT_REGION'], null);
-      try {
-        S3Store('dart_pub_test', credentials: mockCreds);
-      } on ArgumentError catch (e) {
-        expect(e.message, 'Could not determine a default region for aws.');
-      }
+      expect(
+        () => S3Store('dart_pub_test', credentials: mockCreds),
+        throwsA(
+          isA<ArgumentError>().having(
+            (e) => e.message,
+            'message',
+            'Could not determine a default region for aws.',
+          ),
+        ),
+      );
     });
   });
 }
@@ -115,8 +120,8 @@ const testPackageData2 = [31,139,8,0,4,81,79,97,0,3,237,207,73,10,128,48,12,5,
 
 String Function(String, String) newFilePathFunc() {
   return (String package, String version) {
-    var grp = package[0];
-    var subgrp = package.substring(0, 2);
+    final grp = package[0];
+    final subgrp = package.substring(0, 2);
     return path.join('packages', grp, subgrp, package, 'versions',
         '$package-$version.tar.gz');
   };

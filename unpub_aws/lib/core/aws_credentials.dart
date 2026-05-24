@@ -39,10 +39,10 @@ class AwsCredentials {
   Future<Map<String, String>?> getContainerCredentials(
       Map<String, String> environment) async {
     try {
-      var relativeUri =
+      final relativeUri =
           environment['AWS_CONTAINER_CREDENTIALS_RELATIVE_URI'] ?? '';
-      var url = Uri.parse('http://169.254.170.2$relativeUri');
-      var response = await http.read(url);
+      final url = Uri.parse('http://169.254.170.2$relativeUri');
+      final response = await http.read(url);
       return json.decode(response) as Map<String, String>?;
     } catch (e) {
       print('failed to get container credentials.');

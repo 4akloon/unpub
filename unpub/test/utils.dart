@@ -1,33 +1,34 @@
 import 'dart:io';
-import 'package:path/path.dart' as path;
-import 'package:http/http.dart' as http;
-import 'package:unpub/unpub.dart' as unpub;
-import 'package:mongo_dart/mongo_dart.dart';
 
-final notExistingPacakge = 'not_existing_package';
+import 'package:http/http.dart' as http;
+import 'package:mongo_dart/mongo_dart.dart';
+import 'package:path/path.dart' as path;
+import 'package:unpub/unpub.dart' as unpub;
+
+const notExistingPacakge = 'not_existing_package';
 final baseDir = path.absolute('unpub-packages');
-final pubHostedUrl = 'http://localhost:4000';
+const pubHostedUrl = 'http://localhost:4000';
 final baseUri = Uri.parse(pubHostedUrl);
 
-final package0 = 'package_0';
-final package1 = 'package_1';
-final email0 = 'email0@example.com';
-final email1 = 'email1@example.com';
-final email2 = 'email2@example.com';
-final email3 = 'email3@example.com';
+const package0 = 'package_0';
+const package1 = 'package_1';
+const email0 = 'email0@example.com';
+const email1 = 'email1@example.com';
+const email2 = 'email2@example.com';
+const email3 = 'email3@example.com';
 
-createServer(String opEmail) async {
+Future<HttpServer> createServer(String opEmail) async {
   final db = Db('mongodb://localhost:27017/dart_pub_test');
   await db.open();
-  var mongoStore = unpub.MongoStore(db);
+  final mongoStore = unpub.MongoStore(db);
 
-  var app = unpub.App(
+  final app = unpub.App(
     metaStore: mongoStore,
     packageStore: unpub.FileStore(baseDir),
     overrideUploaderEmail: opEmail,
   );
 
-  var server = await app.serve('0.0.0.0', 4000);
+  final server = await app.serve('0.0.0.0', 4000);
   return server;
 }
 

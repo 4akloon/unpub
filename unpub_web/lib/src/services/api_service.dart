@@ -11,6 +11,15 @@ class PackageNotExistsException implements Exception {
   final String message;
 }
 
+class ApiException implements Exception {
+  ApiException(this.message);
+
+  final String message;
+
+  @override
+  String toString() => message;
+}
+
 class ApiService {
   ApiService({String? baseUrl}) : _baseUrl = baseUrl;
 
@@ -41,7 +50,7 @@ class ApiService {
       if (error.contains('package not exists')) {
         throw PackageNotExistsException(error);
       }
-      throw error;
+      throw ApiException(error);
     }
 
     return data['data'];

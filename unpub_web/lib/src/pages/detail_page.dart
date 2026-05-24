@@ -125,7 +125,7 @@ class _DetailPageState extends State<DetailPage> with PreloadStateMixin {
           div(
             classes: 'not-exists',
             [
-              div([.text('This is not a private package, click link below to view it:')]),
+              div([const .text('This is not a private package, click link below to view it:')]),
               a(
                 href: _pubDevLink,
                 attributes: {'target': '_blank', 'rel': 'nofollow'},
@@ -155,7 +155,7 @@ class _DetailPageState extends State<DetailPage> with PreloadStateMixin {
             div(
               classes: 'metadata',
               [
-                .text('Published '),
+                const .text('Published '),
                 span([.text(dateFormat.format(package.createdAt))]),
                 div(
                   classes: 'tags',
@@ -202,10 +202,10 @@ class _DetailPageState extends State<DetailPage> with PreloadStateMixin {
                           [
                             tr(
                               [
-                                th([.text('Version')]),
-                                th([.text('Uploaded')]),
-                                th(classes: 'documentation', attributes: {'width': '60'}, [.text('Documentation')]),
-                                th(classes: 'archive', attributes: {'width': '60'}, [.text('Archive')]),
+                                th([const .text('Version')]),
+                                th([const .text('Uploaded')]),
+                                th(classes: 'documentation', attributes: {'width': '60'}, [const .text('Documentation')]),
+                                th(classes: 'archive', attributes: {'width': '60'}, [const .text('Archive')]),
                               ],
                             ),
                           ],
@@ -272,22 +272,22 @@ class _DetailPageState extends State<DetailPage> with PreloadStateMixin {
             aside(
               classes: 'detail-info-box',
               [
-                h3(classes: 'title', [.text('About')]),
+                h3(classes: 'title', [const .text('About')]),
                 p([.text(package.description)]),
                 p(
                   [
                     if (package.homepage.isNotEmpty)
-                      a(classes: 'link', href: package.homepage, [.text('Homepage')]),
+                      a(classes: 'link', href: package.homepage, [const .text('Homepage')]),
                     if (package.homepage.isNotEmpty) br(),
                     a(
                       classes: 'link',
                       href: '/documentation/${package.name}/${package.version}/',
-                      [.text('API reference')],
+                      [const .text('API reference')],
                     ),
                     br(),
                   ],
                 ),
-                h3(classes: 'title', [.text('Author')]),
+                h3(classes: 'title', [const .text('Author')]),
                 div(
                   [
                     for (final email in package.authors)
@@ -298,14 +298,14 @@ class _DetailPageState extends State<DetailPage> with PreloadStateMixin {
                             a(href: 'mailto:$email', [.text(email)]),
                             Link(
                               to: _listUrl('email:$email'),
-                              attributes: {'rel': 'nofollow'},
-                              child: .text(' search'),
+                              attributes: const {'rel': 'nofollow'},
+                              child: const .text(' search'),
                             ),
                           ],
                         ),
                   ],
                 ),
-                h3(classes: 'title', [.text('Uploader')]),
+                h3(classes: 'title', [const .text('Uploader')]),
                 div(
                   [
                     for (final email in package.uploaders)
@@ -315,29 +315,29 @@ class _DetailPageState extends State<DetailPage> with PreloadStateMixin {
                           a(href: 'mailto:$email', [.text(email)]),
                           Link(
                             to: _listUrl('email:$email'),
-                            attributes: {'rel': 'nofollow'},
-                            child: .text(' search'),
+                            attributes: const {'rel': 'nofollow'},
+                            child: const .text(' search'),
                           ),
                         ],
                       ),
                   ],
                 ),
-                h3(classes: 'title', [.text('Dependencies')]),
+                h3(classes: 'title', [const .text('Dependencies')]),
                 p(
                   [
                     for (final dependency in package.dependencies ?? <String>[])
                       Link(
                         to: _detailUrl(dependency),
-                        child: .text('${dependency}${dependency == package.dependencies!.last ? '' : ', '}'),
+                        child: .text('$dependency${dependency == package.dependencies!.last ? '' : ', '}'),
                       ),
                   ],
                 ),
-                h3(classes: 'title', [.text('More')]),
+                h3(classes: 'title', [const .text('More')]),
                 p(
                   [
                     Link(
                       to: _listUrl('dependency:${package.name}'),
-                      attributes: {'rel': 'nofollow'},
+                      attributes: const {'rel': 'nofollow'},
                       child: .text('Packages that depend on ${package.name}'),
                     ),
                   ],

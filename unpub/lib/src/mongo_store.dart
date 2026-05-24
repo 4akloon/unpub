@@ -1,10 +1,11 @@
-import 'package:mongo_dart/mongo_dart.dart';
 import 'package:intl/intl.dart';
+import 'package:mongo_dart/mongo_dart.dart';
 import 'package:unpub/src/models.dart';
+
 import 'meta_store.dart';
 
-final packageCollection = 'packages';
-final statsCollection = 'stats';
+const packageCollection = 'packages';
+const statsCollection = 'stats';
 
 class MongoStore extends MetaStore {
   Db db;
@@ -19,21 +20,21 @@ class MongoStore extends MetaStore {
     final packages = await db
         .collection(packageCollection)
         .find(selector)
-        .map((item) => UnpubPackage.fromJson(item))
+        .map(UnpubPackage.fromJson)
         .toList();
     return UnpubQueryResult(count, packages);
   }
 
   @override
-  queryPackage(name) async {
-    var json =
+  Future<UnpubPackage?> queryPackage(String name) async {
+    final json =
         await db.collection(packageCollection).findOne(_selectByName(name));
     if (json == null) return null;
     return UnpubPackage.fromJson(json);
   }
 
   @override
-  addVersion(name, version) async {
+  Future<void> addVersion(String name, UnpubVersion version) async {
     await db.collection(packageCollection).update(
         _selectByName(name),
         modify
@@ -47,22 +48,22 @@ class MongoStore extends MetaStore {
   }
 
   @override
-  addUploader(name, email) async {
+  Future<void> addUploader(String name, String email) async {
     await db
         .collection(packageCollection)
         .update(_selectByName(name), modify.push('uploaders', email));
   }
 
   @override
-  removeUploader(name, email) async {
+  Future<void> removeUploader(String name, String email) async {
     await db
         .collection(packageCollection)
         .update(_selectByName(name), modify.pull('uploaders', email));
   }
 
   @override
-  increaseDownloads(name, version) {
-    var today = DateFormat('yyyyMMdd').format(DateTime.now());
+  void increaseDownloads(String name, String version) {
+    final today = DateFormat('yyyyMMdd').format(DateTime.now());
     db
         .collection(packageCollection)
         .update(_selectByName(name), modify.inc('download', 1));
@@ -73,12 +74,12 @@ class MongoStore extends MetaStore {
 
   @override
   Future<UnpubQueryResult> queryPackages({
-    required size,
-    required page,
-    required sort,
-    keyword,
-    uploader,
-    dependency,
+    required int size,
+    required int page,
+    required String sort,
+    String? keyword,
+    String? uploader,
+    String? dependency,
   }) {
     var selector =
         where.sortBy(sort, descending: true).limit(size).skip(page * size);

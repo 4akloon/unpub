@@ -1,23 +1,24 @@
 import 'dart:io';
-import 'package:path/path.dart' as path;
+
 import 'package:args/args.dart';
 import 'package:mongo_dart/mongo_dart.dart';
+import 'package:path/path.dart' as path;
 import 'package:unpub/unpub.dart' as unpub;
 
 Future<void> main(List<String> args) async {
-  var parser = ArgParser();
+  final parser = ArgParser();
   parser.addOption('host', abbr: 'h', defaultsTo: '0.0.0.0');
   parser.addOption('port', abbr: 'p', defaultsTo: '4000');
   parser.addOption('database',
       abbr: 'd', defaultsTo: 'mongodb://localhost:27017/dart_pub');
   parser.addOption('proxy-origin', abbr: 'o', defaultsTo: '');
 
-  var results = parser.parse(args);
+  final results = parser.parse(args);
 
-  var host = results['host'] as String;
-  var port = int.parse(results['port'] as String);
-  var dbUri = results['database'] as String;
-  var proxyOrigin = results['proxy-origin'] as String;
+  final host = results['host'] as String;
+  final port = int.parse(results['port'] as String);
+  final dbUri = results['database'] as String;
+  final proxyOrigin = results['proxy-origin'] as String;
 
   if (results.rest.isNotEmpty) {
     print('Got unexpected arguments: "${results.rest.join(' ')}".\n\nUsage:\n');
@@ -34,9 +35,9 @@ Future<void> main(List<String> args) async {
     exit(1);
   }
 
-  var baseDir = path.absolute('unpub-packages');
+  final baseDir = path.absolute('unpub-packages');
 
-  var app = unpub.App(
+  final app = unpub.App(
     metaStore: unpub.MongoStore(db),
     packageStore: unpub.FileStore(baseDir),
     proxyOrigin: proxyOrigin.trim().isEmpty ? null : Uri.parse(proxyOrigin),

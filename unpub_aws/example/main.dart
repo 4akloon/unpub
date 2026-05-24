@@ -2,7 +2,7 @@ import 'package:mongo_dart/mongo_dart.dart';
 import 'package:unpub/unpub.dart' as unpub;
 import 'package:unpub_aws/unpub_aws.dart' as unpub_aws;
 
-main(List<String> args) async {
+Future<void> main(List<String> args) async {
   final db = Db('mongodb://localhost:27017/dart_pub_test');
   await db.open(); // make sure the MongoDB connection opened
 

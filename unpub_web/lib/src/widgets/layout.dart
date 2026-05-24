@@ -22,7 +22,7 @@ class SiteHeader extends StatelessComponent {
         div(
           classes: 'container site-header',
           [
-            h1(classes: '_visuallyhidden', [.text('Dart pub')]),
+            h1(classes: '_visuallyhidden', [const .text('Dart pub')]),
             button(classes: 'hamburger', []),
             div(classes: 'mask', []),
             div(
@@ -152,12 +152,12 @@ class SiteFooter extends StatelessComponent {
         a(
           classes: 'link',
           href: 'https://github.com/bytedance/unpub',
-          [.text('Source code')],
+          [const .text('Source code')],
         ),
         a(
           classes: 'link github_issue',
           href: 'https://github.com/bytedance/unpub/issues/new',
-          [.text('Report an issue')],
+          [const .text('Report an issue')],
         ),
       ],
     );

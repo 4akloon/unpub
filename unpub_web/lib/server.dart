@@ -1,9 +1,6 @@
 import 'package:jaspr/server.dart';
-import 'package:shelf/shelf.dart';
 import 'package:unpub_web/app.dart';
 import 'package:unpub_web/jaspr_options.dart';
-import 'package:unpub_web/src/services/api_service.dart';
-import 'package:unpub_web/static_assets.dart';
 import 'package:unpub_web/src/services/api_service.dart';
 
 Handler buildHandler({String apiBaseUrl = 'http://127.0.0.1:4000'}) {

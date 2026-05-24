@@ -21,21 +21,17 @@ void main(List<String> arguments) async {
   switch (result.command?.name) {
     case 'login':
       flow = unpub_auth.Flow.login;
-      break;
     case 'logout':
       flow = unpub_auth.Flow.logout;
-      break;
     case 'migrate':
       flow = unpub_auth.Flow.migrate;
       if (result.command?.arguments.length != 1) {
-        Utils.stdoutPrint("unpub_auth migrate need a path argument");
+        Utils.stdoutPrint('unpub_auth migrate need a path argument');
         exit(1);
       }
       subArgs = result.command?.arguments.first;
-      break;
     case 'get':
       flow = unpub_auth.Flow.getToken;
-      break;
     default:
       stdout.write(format('''
 An auth tool for unpub. unpub is using Google OAuth2 by default. There's two situations where the unpub_auth can be used.

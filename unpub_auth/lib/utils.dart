@@ -2,14 +2,10 @@ import 'dart:io';
 import 'package:http_multi_server/http_multi_server.dart';
 import 'package:path/path.dart' as path;
 
+// ignore: avoid_classes_with_only_static_members
 class Utils {
-  static bool _verbose = false;
-  static void enableVerbose() => _verbose = true;
-  static bool _silence = false;
-  static void enableSilence() => _silence = true;
-
   static final credentialsFilePath =
-      path.join(Utils.dartConfigDir, r'unpub-credentials.json');
+      path.join(Utils.dartConfigDir, 'unpub-credentials.json');
 
   /// The location for dart-specific configuration.
   static final String dartConfigDir = () {
@@ -25,13 +21,13 @@ class Utils {
     } else {
       configDir = path.join(Platform.environment['HOME'] ?? '', '.config');
     }
-    final p = path.join(configDir, r'unpub-auth');
+    final p = path.join(configDir, 'unpub-auth');
     Directory(p).createSync();
     return p;
   }();
 
   static Future<HttpServer> bindServer(String host, int port) async {
-    var server = host == 'localhost'
+    final server = host == 'localhost'
         ? await HttpMultiServer.loopback(port)
         : await HttpServer.bind(host, port);
     server.autoCompress = true;
@@ -39,12 +35,12 @@ class Utils {
   }
 
   static Map<String, String> queryToMap(String queryList) {
-    var map = <String, String>{};
-    for (var pair in queryList.split('&')) {
-      var split = _split(pair, '=');
+    final map = <String, String>{};
+    for (final pair in queryList.split('&')) {
+      final split = _split(pair, '=');
       if (split.isEmpty) continue;
-      var key = _urlDecode(split[0]);
-      var value = split.length > 1 ? _urlDecode(split[1]) : '';
+      final key = _urlDecode(split[0]);
+      final value = split.length > 1 ? _urlDecode(split[1]) : '';
       map[key] = value;
     }
     return map;
@@ -56,7 +52,7 @@ class Utils {
   static List<String> _split(String toSplit, String pattern) {
     if (toSplit.isEmpty) return <String>[];
 
-    var index = toSplit.indexOf(pattern);
+    final index = toSplit.indexOf(pattern);
     if (index == -1) return [toSplit];
     return [
       toSplit.substring(0, index),

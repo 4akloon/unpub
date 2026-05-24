@@ -125,7 +125,7 @@ class _ListPageState extends State<ListPage> with PreloadStateMixin {
           classes: 'package-count',
           [
             span([.text('${data.count}')]),
-            .text(' results'),
+            const .text(' results'),
           ],
         ),
         ul(
@@ -145,9 +145,9 @@ class _ListPageState extends State<ListPage> with PreloadStateMixin {
                   p(
                     classes: 'metadata',
                     [
-                      .text('v '),
+                      const .text('v '),
                       Link(to: _detailUrl(package), child: .text(package.latest)),
-                      .text(' • Updated: '),
+                      const .text(' • Updated: '),
                       span([.text(dateFormat.format(package.updatedAt))]),
                       for (final tag in package.tags)
                         span(classes: 'package-tag', [.text(tag)]),
@@ -163,7 +163,7 @@ class _ListPageState extends State<ListPage> with PreloadStateMixin {
             li(
               classes: _currentPage == 0 ? '-disabled' : null,
               [
-                Link(to: _listUrl(_currentPage - 1), child: span([.text('«')])),
+                Link(to: _listUrl(_currentPage - 1), child: span([const .text('«')])),
               ],
             ),
             for (final page in _pages)
@@ -176,7 +176,7 @@ class _ListPageState extends State<ListPage> with PreloadStateMixin {
             li(
               classes: _currentPage == _pageCount - 1 ? '-disabled' : null,
               [
-                Link(to: _listUrl(_currentPage + 1), child: span([.text('»')])),
+                Link(to: _listUrl(_currentPage + 1), child: span([const .text('»')])),
               ],
             ),
           ],

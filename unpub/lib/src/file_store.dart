@@ -16,7 +16,7 @@ class FileStore extends PackageStore {
 
   @override
   Future<void> upload(String name, String version, List<int> content) async {
-    var file = _getTarballFile(name, version);
+    final file = _getTarballFile(name, version);
     await file.create(recursive: true);
     await file.writeAsBytes(content);
   }

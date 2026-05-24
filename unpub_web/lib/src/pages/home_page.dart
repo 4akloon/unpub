@@ -59,7 +59,7 @@ class _HomePageState extends State<HomePage> with PreloadStateMixin {
                 div(
                   classes: 'tooltip-base hoverable',
                   [
-                    h2(classes: 'center landing-page-title tooltip-dotted', [.text('Top Dart packages')]),
+                    h2(classes: 'center landing-page-title tooltip-dotted', [const .text('Top Dart packages')]),
                   ],
                 ),
               ],
@@ -92,7 +92,7 @@ class _HomePageState extends State<HomePage> with PreloadStateMixin {
             div(
               classes: 'more',
               [
-                Link(to: '/packages', child: .text('More Dart packages...')),
+                const Link(to: '/packages', child: .text('More Dart packages...')),
               ],
             ),
           ],

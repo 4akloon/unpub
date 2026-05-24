@@ -2,22 +2,22 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:http/http.dart' as http;
+import 'package:oauth2/oauth2.dart' as oauth2;
 import 'package:shelf/shelf.dart' as shelf;
 import 'package:shelf/shelf_io.dart' as shelf_io;
-import 'package:oauth2/oauth2.dart' as oauth2;
-import 'package:http/http.dart' as http;
 
-import 'utils.dart';
 import 'credentials_ext.dart';
+import 'utils.dart';
 
 const _tokenEndpoint = 'https://oauth2.googleapis.com/token';
 const _authEndpoint = 'https://accounts.google.com/o/oauth2/auth';
 const _scopes = ['openid', 'https://www.googleapis.com/auth/userinfo.email'];
 
-get _identifier => utf8.decode(base64.decode(
-    r'NDY4NDkyNDU2MjM5LTJja2wxdTB1dGloOHRzZWtnMGxpZ2NpY2VqYm8wbnZkLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29t'));
-get _secret => utf8
-    .decode(base64.decode(r'R09DU1BYLUxHMWZTV052UjA0S0NrWVZRMTVGS3J1cGJ5bFk='));
+String get _identifier => utf8.decode(base64.decode(
+    'NDY4NDkyNDU2MjM5LTJja2wxdTB1dGloOHRzZWtnMGxpZ2NpY2VqYm8wbnZkLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29t'));
+String get _secret => utf8
+    .decode(base64.decode('R09DU1BYLUxHMWZTV052UjA0S0NrWVZRMTVGS3J1cGJ5bFk='));
 
 enum Flow {
   login,
@@ -30,26 +30,22 @@ Future<void> run({Flow flow = Flow.getToken, Object? args}) async {
   switch (flow) {
     case Flow.login:
       await _goAuth();
-      break;
     case Flow.logout:
       await removeCredentialsFromLocal();
-      break;
     case Flow.migrate:
       await migrate(args);
-      break;
     case Flow.getToken:
       await getToken();
-      break;
   }
 }
 
 Future<void> migrate(Object? args) async {
   if (args == null || args is! String) {
-    Utils.stdoutPrint("$args is invalid");
+    Utils.stdoutPrint('$args is invalid');
     exit(1);
   }
-  if (File(args).existsSync() == false) {
-    Utils.stdoutPrint("$args is not exist.");
+  if (!File(args).existsSync()) {
+    Utils.stdoutPrint('$args is not exist.');
     exit(1);
   }
 
@@ -117,7 +113,7 @@ Future<oauth2.Client> clientWithAuthorization() async {
       /// That's safe.
       /// see [dart-lang/pub/lib/src/oauth2.dart#L238:L240](https://github.com/dart-lang/pub/blob/400f21e9883ce6555b66d3ef82f0b732ba9b9fc8/lib/src/oauth2.dart#L238:L240)
       server.close();
-      return shelf.Response.ok(r'unpub Authorized Successfully.');
+      return shelf.Response.ok('unpub Authorized Successfully.');
     }
 
     if (request.url.path.isNotEmpty) {
@@ -137,18 +133,16 @@ Future<oauth2.Client> clientWithAuthorization() async {
     return resp;
   });
 
-  final authUrl = grant
+  final authUrl = '${grant
           .getAuthorizationUrl(Uri.parse('http://localhost:${server.port}'),
-              scopes: _scopes)
-          .toString() +
-      '&access_type=offline&approval_prompt=force';
+              scopes: _scopes)}&access_type=offline&approval_prompt=force';
   Utils.stdoutPrint(
       'unpub needs your authorization to upload packages on your behalf.\n'
       'In a web browser, go to $authUrl\n'
       'Then click "Allow access".\n\n'
       'Waiting for your authorization...');
 
-  var client = await completer.future;
+  final client = await completer.future;
   Utils.stdoutPrint('Successfully authorized.\n');
   return client;
 }
