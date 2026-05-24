@@ -4,9 +4,12 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    container:
-      image: google/dart:latest
     steps:
-      - uses: actions/checkout@v2
-      - run: cd unpub && dart pub get && dart analyze
-      - run: dart format --set-exit-if-changed **/*.dart
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: 3.10.0
+      - run: dart pub get
+      - run: make build-web
+      - run: dart analyze
+      - run: dart format --set-exit-if-changed --line-length=120 .

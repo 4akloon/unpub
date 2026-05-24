@@ -4,7 +4,7 @@ import 'package:args/args.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 import 'package:unpub/unpub.dart' as unpub;
 
-main(List<String> args) async {
+Future<void> main(List<String> args) async {
   var parser = ArgParser();
   parser.addOption('host', abbr: 'h', defaultsTo: '0.0.0.0');
   parser.addOption('port', abbr: 'p', defaultsTo: '4000');
@@ -17,7 +17,7 @@ main(List<String> args) async {
   var host = results['host'] as String;
   var port = int.parse(results['port'] as String);
   var dbUri = results['database'] as String;
-  var proxy_origin = results['proxy-origin'] as String;
+  var proxyOrigin = results['proxy-origin'] as String;
 
   if (results.rest.isNotEmpty) {
     print('Got unexpected arguments: "${results.rest.join(' ')}".\n\nUsage:\n');
@@ -26,16 +26,31 @@ main(List<String> args) async {
   }
 
   final db = Db(dbUri);
-  await db.open();
+  try {
+    await db.open();
+  } on ConnectionException {
+    stderr.writeln('Could not connect to MongoDB at $dbUri');
+    stderr.writeln('Start local MongoDB with: make dev-deps');
+    exit(1);
+  }
 
   var baseDir = path.absolute('unpub-packages');
 
   var app = unpub.App(
     metaStore: unpub.MongoStore(db),
     packageStore: unpub.FileStore(baseDir),
-    proxy_origin: proxy_origin.trim().isEmpty ? null : Uri.parse(proxy_origin)
+    proxyOrigin: proxyOrigin.trim().isEmpty ? null : Uri.parse(proxyOrigin),
   );
 
-  var server = await app.serve(host, port);
-  print('Serving at http://${server.address.host}:${server.port}');
+  try {
+    final server = await app.serve(host, port);
+    print('Serving at http://${server.address.host}:${server.port}');
+  } on SocketException catch (error) {
+    if (error.osError?.errorCode == 48) {
+      stderr.writeln('Port $port is already in use.');
+      stderr.writeln('Try another port: dart run unpub/bin/unpub.dart -p ${port + 1}');
+      stderr.writeln('Or find the process: lsof -nP -iTCP:$port -sTCP:LISTEN');
+    }
+    rethrow;
+  }
 }

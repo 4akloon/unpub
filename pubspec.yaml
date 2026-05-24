@@ -1,0 +1,15 @@
+name: unpub_workspace
+publish_to: none
+
+environment:
+  sdk: ^3.10.0
+
+workspace:
+  - unpub_api
+  - unpub
+  - unpub_web
+  - unpub_aws
+  - unpub_auth
+
+dev_dependencies:
+  lints: ^5.0.0

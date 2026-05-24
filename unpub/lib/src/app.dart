@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:shelf/shelf.dart' as shelf;
 import 'package:shelf/shelf_io.dart' as shelf_io;
@@ -13,12 +14,12 @@ import 'package:shelf_router/shelf_router.dart';
 import 'package:pub_semver/pub_semver.dart' as semver;
 import 'package:archive/archive.dart';
 import 'package:unpub/src/models.dart';
-import 'package:unpub/unpub_api/lib/models.dart';
+import 'package:unpub_api/models.dart';
 import 'package:unpub/src/meta_store.dart';
 import 'package:unpub/src/package_store.dart';
+import 'package:unpub_web/server.dart' as web;
+import 'package:unpub_web/static_assets.dart' as web_assets;
 import 'utils.dart';
-import 'static/index.html.dart' as index_html;
-import 'static/main.dart.js.dart' as main_dart_js;
 
 part 'app.g.dart';
 
@@ -39,7 +40,7 @@ class App {
   final String? overrideUploaderEmail;
 
   /// A forward proxy uri
-  final Uri? proxy_origin;
+  final Uri? proxyOrigin;
 
   /// validate if the package can be published
   ///
@@ -54,8 +55,9 @@ class App {
     this.googleapisProxy,
     this.overrideUploaderEmail,
     this.uploadValidator,
-    this.proxy_origin,
-  });
+    Uri? proxyOrigin,
+    @Deprecated('Use proxyOrigin instead') Uri? proxy_origin,
+  }) : proxyOrigin = proxyOrigin ?? proxy_origin;
 
   static shelf.Response _okWithJson(Map<String, dynamic> data) =>
       shelf.Response.ok(
@@ -83,8 +85,8 @@ class App {
   http.Client? _googleapisClient;
 
   String _resolveUrl(shelf.Request req, String reference) {
-    if (proxy_origin != null) {
-      return proxy_origin!.resolve(reference).toString();
+    if (proxyOrigin != null) {
+      return proxyOrigin!.resolve(reference).toString();
     }
     String? proxyOriginInHeader = req.headers[proxyOriginHeader];
     if (proxyOriginInHeader != null) {
@@ -118,16 +120,19 @@ class App {
   }
 
   Future<HttpServer> serve([String host = '0.0.0.0', int port = 4000]) async {
-    var handler = const shelf.Pipeline()
+    final webHandler = web.buildHandler(apiBaseUrl: 'http://127.0.0.1:$port');
+    final staticHandler = web_assets.staticAssetsHandler();
+    final handler = const shelf.Pipeline()
         .addMiddleware(corsHeaders())
         .addMiddleware(shelf.logRequests())
-        .addHandler((req) async {
-      // Return 404 by default
-      // https://github.com/google/dart-neats/issues/1
-      var res = await router.call(req);
-      return res;
-    });
-    var server = await shelf_io.serve(handler, host, port);
+        .addHandler(
+          shelf.Cascade()
+              .add(router.call)
+              .add(staticHandler)
+              .add(webHandler)
+              .handler,
+        );
+    final server = await shelf_io.serve(handler, host, port);
     return server;
   }
 
@@ -258,7 +263,7 @@ class App {
       }
 
       var bb = await fileData!.fold(
-          BytesBuilder(), (BytesBuilder byteBuilder, d) => byteBuilder..add(d));
+          BytesBuilder(copy: false), (BytesBuilder byteBuilder, d) => byteBuilder..add(d));
       var tarballBytes = bb.takeBytes();
       var tarBytes = GZipDecoder().decodeBytes(tarballBytes);
       var archive = TarDecoder().decodeBytes(tarBytes);
@@ -518,21 +523,6 @@ class App {
     );
 
     return _okWithJson({'data': data.toJson()});
-  }
-
-  @Route.get('/')
-  @Route.get('/packages')
-  @Route.get('/packages/<name>')
-  @Route.get('/packages/<name>/versions/<version>')
-  Future<shelf.Response> indexHtml(shelf.Request req) async {
-    return shelf.Response.ok(index_html.content,
-        headers: {HttpHeaders.contentTypeHeader: ContentType.html.mimeType});
-  }
-
-  @Route.get('/main.dart.js')
-  Future<shelf.Response> mainDartJs(shelf.Request req) async {
-    return shelf.Response.ok(main_dart_js.content,
-        headers: {HttpHeaders.contentTypeHeader: 'text/javascript'});
   }
 
   String _getBadgeUrl(String label, String message, String color,

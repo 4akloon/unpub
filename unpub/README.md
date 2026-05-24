@@ -10,6 +10,10 @@ Unpub is a self-hosted private Dart Pub server for Enterprise, with a simple web
 
 ## Usage
 
+This repository is a Dart workspace monorepo. Run `dart pub get` from the repository root before working with any package.
+
+For local development, start MongoDB with `make dev-deps` from the repository root, then run `make dev`.
+
 ### Command Line
 
 ```sh
@@ -50,6 +54,7 @@ main(List<String> args) async {
 | `upstream` | Upstream url | https://pub.dev |
 | `googleapisProxy` | Http(s) proxy to call googleapis (to get uploader email) | - |
 | `uploadValidator` | See [Package validator](#package-validator) | - |
+| `proxyOrigin` | Forward proxy origin URI | - |
 
 
 ### Usage behind reverse-proxy

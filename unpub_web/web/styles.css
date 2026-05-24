@@ -1,16 +1,3 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>Unpub</title>
-    <meta charset="utf-8" />
-    <base href="/" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700"
-    />
-    <!-- styles are taken from https://web.archive.org/web/20191012124525/https://pub.dev/ with images inlined -->
-    <style>
       * {
         box-sizing: border-box;
       }
@@ -1696,11 +1683,3 @@
         background-color: transparent;
         border: 0;
       }
-    </style>
-    <link rel="icon" type="image/png" href="https://pub.dev/favicon.ico" />
-    <script defer src="main.dart.js"></script>
-  </head>
-  <body>
-    <my-app>Loading...</my-app>
-  </body>
-</html>

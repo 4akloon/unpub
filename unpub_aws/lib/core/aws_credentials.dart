@@ -1,6 +1,5 @@
-import 'dart:cli';
-import 'dart:io';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:http/http.dart' as http;
 
@@ -23,16 +22,12 @@ class AwsCredentials {
     awsAccessKeyId = awsAccessKeyId ?? env['AWS_ACCESS_KEY_ID'];
     awsSecretAccessKey = awsSecretAccessKey ?? env['AWS_SECRET_ACCESS_KEY'];
 
-    var isInContainer = env['AWS_CONTAINER_CREDENTIALS_RELATIVE_URI'];
-
-    if ((isInContainer != null || containerCredentials != null) &&
-        (awsAccessKeyId == null && awsSecretAccessKey == null)) {
-      var data = containerCredentials ?? waitFor(getContainerCredentials(env));
-      if (data != null) {
-        awsAccessKeyId = data['AccessKeyId'];
-        awsSecretAccessKey = data['SecretAccessKey'];
-        awsSessionToken = data['Token'];
-      }
+    if (containerCredentials != null &&
+        awsAccessKeyId == null &&
+        awsSecretAccessKey == null) {
+      awsAccessKeyId = containerCredentials!['AccessKeyId'];
+      awsSecretAccessKey = containerCredentials!['SecretAccessKey'];
+      awsSessionToken = containerCredentials!['Token'];
     }
 
     if (awsAccessKeyId == null || awsSecretAccessKey == null) {
@@ -48,9 +43,10 @@ class AwsCredentials {
           environment['AWS_CONTAINER_CREDENTIALS_RELATIVE_URI'] ?? '';
       var url = Uri.parse('http://169.254.170.2$relativeUri');
       var response = await http.read(url);
-      return json.decode(response);
+      return json.decode(response) as Map<String, String>?;
     } catch (e) {
       print('failed to get container credentials.');
     }
+    return null;
   }
 }

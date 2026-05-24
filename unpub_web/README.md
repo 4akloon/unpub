@@ -1,7 +1,16 @@
 # unpub_web
 
-A web app that uses [AngularDart](https://webdev.dartlang.org/angular) and
-[AngularDart Components](https://webdev.dartlang.org/components).
+Unpub web UI built with [Jaspr](https://docs.jaspr.site/) (SSR integrated into the unpub shelf server).
 
-Created from templates made available by Stagehand under a BSD-style
-[license](https://github.com/dart-lang/stagehand/blob/master/LICENSE).
+## Development
+
+From the monorepo root:
+
+```sh
+dart pub get
+make dev-deps   # starts MongoDB via Docker
+make build-web  # builds Jaspr client bundle (required once)
+make dev        # or: PORT=4001 make dev
+```
+
+The web UI is served from the same process as the API via Jaspr SSR.
