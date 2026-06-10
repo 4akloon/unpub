@@ -30,7 +30,8 @@ class _ListPageState extends State<ListPage> with PreloadStateMixin {
   @override
   Future<void> preloadState() async {
     _query = component.state.queryParams['q'];
-    _currentPage = int.tryParse(component.state.queryParams['page'] ?? '0') ?? 0;
+    _currentPage =
+        int.tryParse(component.state.queryParams['page'] ?? '0') ?? 0;
     _data = await apiService.fetchPackages(
       size: pageSize,
       page: _currentPage,
@@ -45,7 +46,8 @@ class _ListPageState extends State<ListPage> with PreloadStateMixin {
       return;
     }
     _query = component.state.queryParams['q'];
-    _currentPage = int.tryParse(component.state.queryParams['page'] ?? '0') ?? 0;
+    _currentPage =
+        int.tryParse(component.state.queryParams['page'] ?? '0') ?? 0;
     if (_data == null) {
       _load();
     }
@@ -55,7 +57,8 @@ class _ListPageState extends State<ListPage> with PreloadStateMixin {
   void didUpdateComponent(ListPage oldComponent) {
     super.didUpdateComponent(oldComponent);
     final nextQuery = component.state.queryParams['q'];
-    final nextPage = int.tryParse(component.state.queryParams['page'] ?? '0') ?? 0;
+    final nextPage =
+        int.tryParse(component.state.queryParams['page'] ?? '0') ?? 0;
     if (nextQuery != _query || nextPage != _currentPage) {
       _query = nextQuery;
       _currentPage = nextPage;
@@ -93,10 +96,14 @@ class _ListPageState extends State<ListPage> with PreloadStateMixin {
     final leftCount = min(_currentPage, 5);
     final rightCount = min(_pageCount - _currentPage, 5);
     final offset = max(_currentPage - 5, 0);
-    return List<int>.generate(leftCount + rightCount + 1, (index) => index + offset);
+    return List<int>.generate(
+      leftCount + rightCount + 1,
+      (index) => index + offset,
+    );
   }
 
-  String _detailUrl(ListApiPackage package) => '/packages/${Uri.encodeComponent(package.name)}';
+  String _detailUrl(ListApiPackage package) =>
+      '/packages/${Uri.encodeComponent(package.name)}';
 
   String _listUrl(int page) {
     final queryParameters = <String, String>{};
@@ -148,10 +155,14 @@ class _ListPageState extends State<ListPage> with PreloadStateMixin {
                     classes: 'metadata',
                     [
                       const .text('v '),
-                      Link(to: _detailUrl(package), child: .text(package.latest)),
+                      Link(
+                        to: _detailUrl(package),
+                        child: .text(package.latest),
+                      ),
                       const .text(' • Updated: '),
                       span([.text(dateFormat.format(package.updatedAt))]),
-                      for (final tag in package.tags) span(classes: 'package-tag', [.text(tag)]),
+                      for (final tag in package.tags)
+                        span(classes: 'package-tag', [.text(tag)]),
                     ],
                   ),
                 ],
@@ -164,7 +175,10 @@ class _ListPageState extends State<ListPage> with PreloadStateMixin {
             li(
               classes: _currentPage == 0 ? '-disabled' : null,
               [
-                Link(to: _listUrl(_currentPage - 1), child: span([const .text('«')])),
+                Link(
+                  to: _listUrl(_currentPage - 1),
+                  child: const span([.text('«')]),
+                ),
               ],
             ),
             for (final page in _pages)
@@ -177,7 +191,10 @@ class _ListPageState extends State<ListPage> with PreloadStateMixin {
             li(
               classes: _currentPage == _pageCount - 1 ? '-disabled' : null,
               [
-                Link(to: _listUrl(_currentPage + 1), child: span([const .text('»')])),
+                Link(
+                  to: _listUrl(_currentPage + 1),
+                  child: const span([.text('»')]),
+                ),
               ],
             ),
           ],

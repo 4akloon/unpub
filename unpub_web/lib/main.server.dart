@@ -7,17 +7,18 @@ import 'package:unpub_web/main.server.options.dart';
 void main() {
   Jaspr.initializeApp(options: defaultServerOptions);
   runApp(
-    Document(
+    const Document(
       title: 'Unpub',
       head: [
         link(
           rel: 'stylesheet',
-          href: 'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700',
+          href:
+              'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700',
         ),
         link(rel: 'stylesheet', href: '/styles.css'),
         link(rel: 'icon', type: 'image/png', href: '/favicon.png'),
       ],
-      body: const App(),
+      body: App(),
     ),
   );
 }

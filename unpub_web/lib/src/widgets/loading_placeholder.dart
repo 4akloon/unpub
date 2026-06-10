@@ -8,7 +8,7 @@ Component pageLoadingPlaceholder() {
   return mainElement(
     classes: 'page-loading',
     [
-      div(classes: 'page-loading-inner', []),
+      const div(classes: 'page-loading-inner', []),
     ],
   );
 }

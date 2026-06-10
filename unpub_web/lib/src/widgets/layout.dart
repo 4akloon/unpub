@@ -18,13 +18,13 @@ class SiteHeader extends StatelessComponent {
 
   @override
   Component build(BuildContext context) {
-    return header(
+    return const header(
       classes: 'site-header-row',
       [
         div(
           classes: 'container site-header',
           [
-            h1(classes: '_visuallyhidden', [const .text('Dart pub')]),
+            h1(classes: '_visuallyhidden', [.text('Dart pub')]),
             button(classes: 'hamburger', []),
             div(classes: 'mask', []),
             div(
@@ -103,11 +103,16 @@ class SearchBanner extends StatelessComponent {
                       events: {
                         'input': (event) {
                           final target = event.target as web.HTMLInputElement?;
-                          context.read(searchKeywordProvider.notifier).state = target?.value ?? '';
+                          context.read(searchKeywordProvider.notifier).state =
+                              target?.value ?? '';
                         },
                       },
                     ),
-                    button(classes: 'icon', attributes: {'type': 'submit'}, []),
+                    const button(
+                      classes: 'icon',
+                      attributes: {'type': 'submit'},
+                      [],
+                    ),
                   ],
                 ),
               ],
@@ -124,18 +129,18 @@ class SiteFooter extends StatelessComponent {
 
   @override
   Component build(BuildContext context) {
-    return footer(
+    return const footer(
       classes: 'site-footer',
       [
         a(
           classes: 'link',
           href: 'https://github.com/bytedance/unpub',
-          [const .text('Source code')],
+          [.text('Source code')],
         ),
         a(
           classes: 'link github_issue',
           href: 'https://github.com/bytedance/unpub/issues/new',
-          [const .text('Report an issue')],
+          [.text('Report an issue')],
         ),
       ],
     );

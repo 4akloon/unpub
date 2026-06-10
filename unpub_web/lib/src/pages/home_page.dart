@@ -41,7 +41,8 @@ class _HomePageState extends State<HomePage> with PreloadStateMixin {
     }
   }
 
-  String _detailUrl(ListApiPackage package) => '/packages/${Uri.encodeComponent(package.name)}';
+  String _detailUrl(ListApiPackage package) =>
+      '/packages/${Uri.encodeComponent(package.name)}';
 
   @override
   Component build(BuildContext context) {
@@ -55,13 +56,15 @@ class _HomePageState extends State<HomePage> with PreloadStateMixin {
         div(
           classes: 'home-lists-container',
           [
-            div(
+            const div(
               classes: 'landing-page-title-block',
               [
                 div(
                   classes: 'tooltip-base hoverable',
                   [
-                    h2(classes: 'center landing-page-title tooltip-dotted', [const .text('Top Dart packages')]),
+                    h2(classes: 'center landing-page-title tooltip-dotted', [
+                      .text('Top Dart packages'),
+                    ]),
                   ],
                 ),
               ],
@@ -76,24 +79,30 @@ class _HomePageState extends State<HomePage> with PreloadStateMixin {
                       h3(
                         classes: 'title',
                         [
-                          Link(to: _detailUrl(package), child: .text(package.name)),
+                          Link(
+                            to: _detailUrl(package),
+                            child: .text(package.name),
+                          ),
                         ],
                       ),
                       p(
                         classes: 'metadata',
                         [
-                          for (final tag in package.tags) span(classes: 'package-tag', [.text(tag)]),
+                          for (final tag in package.tags)
+                            span(classes: 'package-tag', [.text(tag)]),
                         ],
                       ),
-                      p(classes: 'description', [.text(package.description ?? '')]),
+                      p(classes: 'description', [
+                        .text(package.description ?? ''),
+                      ]),
                     ],
                   ),
               ],
             ),
-            div(
+            const div(
               classes: 'more',
               [
-                const Link(to: '/packages', child: .text('More Dart packages...')),
+                Link(to: '/packages', child: .text('More Dart packages...')),
               ],
             ),
           ],

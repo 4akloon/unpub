@@ -18,7 +18,7 @@ class App extends StatelessComponent {
         routes: [
           ShellRoute(
             builder: (context, state, child) {
-              return fragment([
+              return Component.fragment([
                 const SiteHeader(),
                 const SearchBanner(),
                 div(classes: 'container', [child]),

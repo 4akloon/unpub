@@ -111,7 +111,7 @@ class _DetailPageState extends State<DetailPage> with PreloadStateMixin {
   Component _tabButton(String label, int index) {
     return li(
       classes: _activeTab == index ? 'tab-button -active' : 'tab-button',
-      attributes: {'role': 'button'},
+      attributes: const {'role': 'button'},
       events: {
         'click': (_) => setState(() => _activeTab = index),
       },
@@ -127,10 +127,14 @@ class _DetailPageState extends State<DetailPage> with PreloadStateMixin {
           div(
             classes: 'not-exists',
             [
-              div([const .text('This is not a private package, click link below to view it:')]),
+              const div([
+                .text(
+                  'This is not a private package, click link below to view it:',
+                ),
+              ]),
               a(
                 href: _pubDevLink,
-                attributes: {'target': '_blank', 'rel': 'nofollow'},
+                attributes: const {'target': '_blank', 'rel': 'nofollow'},
                 [.text(_pubDevLink)],
               ),
             ],
@@ -162,7 +166,8 @@ class _DetailPageState extends State<DetailPage> with PreloadStateMixin {
                 div(
                   classes: 'tags',
                   [
-                    for (final tag in package.tags) span(classes: 'package-tag', [.text(tag)]),
+                    for (final tag in package.tags)
+                      span(classes: 'package-tag', [.text(tag)]),
                   ],
                 ),
               ],
@@ -184,33 +189,43 @@ class _DetailPageState extends State<DetailPage> with PreloadStateMixin {
               classes: 'detail-tabs-content main',
               [
                 section(
-                  classes: _activeTab == 0 ? 'tab-content markdown-body -active' : 'tab-content markdown-body',
+                  classes: _activeTab == 0
+                      ? 'tab-content markdown-body -active'
+                      : 'tab-content markdown-body',
                   id: 'readme',
                   [if (readmeHtml != null) RawText(readmeHtml)],
                 ),
                 section(
-                  classes: _activeTab == 1 ? 'tab-content markdown-body -active' : 'tab-content markdown-body',
+                  classes: _activeTab == 1
+                      ? 'tab-content markdown-body -active'
+                      : 'tab-content markdown-body',
                   id: 'changelog',
                   [if (changelogHtml != null) RawText(changelogHtml)],
                 ),
                 section(
-                  classes: _activeTab == 2 ? 'tab-content -active' : 'tab-content',
+                  classes: _activeTab == 2
+                      ? 'tab-content -active'
+                      : 'tab-content',
                   [
                     table(
                       classes: 'version-table',
                       [
-                        thead(
+                        const thead(
                           [
                             tr(
                               [
-                                th([const .text('Version')]),
-                                th([const .text('Uploaded')]),
+                                th([.text('Version')]),
+                                th([.text('Uploaded')]),
                                 th(
                                   classes: 'documentation',
                                   attributes: {'width': '60'},
-                                  [const .text('Documentation')],
+                                  [.text('Documentation')],
                                 ),
-                                th(classes: 'archive', attributes: {'width': '60'}, [const .text('Archive')]),
+                                th(
+                                  classes: 'archive',
+                                  attributes: {'width': '60'},
+                                  [.text('Archive')],
+                                ),
                               ],
                             ),
                           ],
@@ -225,25 +240,32 @@ class _DetailPageState extends State<DetailPage> with PreloadStateMixin {
                                       strong(
                                         [
                                           Link(
-                                            to: _detailUrl(package.name, item.version),
+                                            to: _detailUrl(
+                                              package.name,
+                                              item.version,
+                                            ),
                                             child: .text(item.version),
                                           ),
                                         ],
                                       ),
                                     ],
                                   ),
-                                  td([.text(dateFormat.format(item.createdAt))]),
+                                  td([
+                                    .text(dateFormat.format(item.createdAt)),
+                                  ]),
                                   td(
                                     classes: 'documentation',
                                     [
                                       a(
-                                        href: '/documentation/${package.name}/${item.version}/',
-                                        attributes: {'rel': 'nofollow'},
+                                        href:
+                                            '/documentation/${package.name}/${item.version}/',
+                                        attributes: const {'rel': 'nofollow'},
                                         [
                                           img(
                                             src:
                                                 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNHB4IiBoZWlnaHQ9IjI0cHgiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iIzAwMDAwMCI+JTBBICAgIDxwYXRoIGQ9Ik0wIDBoMjR2MjRIMHoiIGZpbGw9Im5vbmUiLz4lMEEgICAgPHBhdGggZD0iTTE5IDNINWMtMS4xIDAtMiAuOS0yIDJ2MTRjMCAxLjEuOSAyIDIgMmgxNGMxLjEgMCAyLS45IDItMlY1YzAtMS4xLS45LTItMi0yem0tMS45OSA2SDdWN2gxMC4wMXYyem0wIDRIN3YtMmgxMC4wMXYyem0tMyA0SDd2LTJoNy4wMXYyeiIvPiUwQTwvc3ZnPg==',
-                                            alt: 'Documentation for ${package.name} ${item.version}',
+                                            alt:
+                                                'Documentation for ${package.name} ${item.version}',
                                           ),
                                         ],
                                       ),
@@ -253,12 +275,14 @@ class _DetailPageState extends State<DetailPage> with PreloadStateMixin {
                                     classes: 'archive',
                                     [
                                       a(
-                                        href: '/packages/${package.name}/versions/${item.version}.tar.gz',
+                                        href:
+                                            '/packages/${package.name}/versions/${item.version}.tar.gz',
                                         [
                                           img(
                                             src:
                                                 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNHB4IiBoZWlnaHQ9IjI0cHgiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iIzAwMDAwMCI+JTBBICAgIDxwYXRoIGQ9Ik0xOSA5aC00VjNIOXY2SDVsNyA3IDctN3pNNSAxOHYyaDE0di0ySDV6Ii8+JTBBICAgIDxwYXRoIGQ9Ik0wIDBoMjR2MjRIMHoiIGZpbGw9Im5vbmUiLz4lMEE8L3N2Zz4=',
-                                            alt: 'Download ${package.name} ${item.version}',
+                                            alt:
+                                                'Download ${package.name} ${item.version}',
                                           ),
                                         ],
                                       ),
@@ -277,22 +301,25 @@ class _DetailPageState extends State<DetailPage> with PreloadStateMixin {
             aside(
               classes: 'detail-info-box',
               [
-                h3(classes: 'title', [const .text('About')]),
+                const h3(classes: 'title', [.text('About')]),
                 p([.text(package.description)]),
                 p(
                   [
                     if (package.homepage.isNotEmpty)
-                      a(classes: 'link', href: package.homepage, [const .text('Homepage')]),
-                    if (package.homepage.isNotEmpty) br(),
+                      a(classes: 'link', href: package.homepage, const [
+                        .text('Homepage'),
+                      ]),
+                    if (package.homepage.isNotEmpty) const br(),
                     a(
                       classes: 'link',
-                      href: '/documentation/${package.name}/${package.version}/',
-                      [const .text('API reference')],
+                      href:
+                          '/documentation/${package.name}/${package.version}/',
+                      const [.text('API reference')],
                     ),
-                    br(),
+                    const br(),
                   ],
                 ),
-                h3(classes: 'title', [const .text('Author')]),
+                const h3(classes: 'title', [.text('Author')]),
                 div(
                   [
                     for (final email in package.authors)
@@ -310,7 +337,7 @@ class _DetailPageState extends State<DetailPage> with PreloadStateMixin {
                         ),
                   ],
                 ),
-                h3(classes: 'title', [const .text('Uploader')]),
+                const h3(classes: 'title', [.text('Uploader')]),
                 div(
                   [
                     for (final email in package.uploaders)
@@ -327,17 +354,19 @@ class _DetailPageState extends State<DetailPage> with PreloadStateMixin {
                       ),
                   ],
                 ),
-                h3(classes: 'title', [const .text('Dependencies')]),
+                const h3(classes: 'title', [.text('Dependencies')]),
                 p(
                   [
                     for (final dependency in package.dependencies ?? <String>[])
                       Link(
                         to: _detailUrl(dependency),
-                        child: .text('$dependency${dependency == package.dependencies!.last ? '' : ', '}'),
+                        child: .text(
+                          '$dependency${dependency == package.dependencies!.last ? '' : ', '}',
+                        ),
                       ),
                   ],
                 ),
-                h3(classes: 'title', [const .text('More')]),
+                const h3(classes: 'title', [.text('More')]),
                 p(
                   [
                     Link(
