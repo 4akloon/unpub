@@ -1,4 +1,3 @@
-import 'package:jaspr/dom.dart';
 import 'package:jaspr/jaspr.dart';
 import 'package:jaspr_riverpod/jaspr_riverpod.dart';
 import 'package:jaspr_router/jaspr_router.dart';
@@ -17,14 +16,7 @@ class App extends StatelessComponent {
       child: Router(
         routes: [
           ShellRoute(
-            builder: (context, state, child) {
-              return Component.fragment([
-                const SiteHeader(),
-                const SearchBanner(),
-                div(classes: 'container', [child]),
-                const SiteFooter(),
-              ]);
-            },
+            builder: (context, state, child) => AppShell(child: child),
             routes: [
               Route(path: '/', builder: (context, state) => const HomePage()),
               Route(

@@ -17,6 +17,10 @@
         flex-direction: column;
       }
 
+      .app-shell {
+        display: contents;
+      }
+
       body,
       input,
       button {
@@ -159,7 +163,7 @@
         display: block;
       }
 
-      body>.container {
+      .app-shell>.container {
         flex: 1 0 auto;
         width: 100%;
         padding-bottom: 80px;

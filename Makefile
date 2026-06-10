@@ -7,20 +7,13 @@ dev-down:
 	docker compose down
 
 dev:
-	@test -f unpub_web/web/main.client.dart.js || $(MAKE) build-web
-	UPLOADER_EMAIL=test@local.dev dart run unpub/bin/unpub.dart -p $(PORT)
+	cd unpub_web && UPLOADER_EMAIL=test@local.dev dart run jaspr_cli:jaspr serve -i bin/unpub.server.dart --port $(PORT)
 
 build-web:
-	cd unpub_web && dart run build_runner build && dart run tool/build_client_js.dart
+	cd unpub_web && dart run jaspr_cli:jaspr build
 
 build:
 	$(MAKE) build-web
-
-fmt:
-	dart format --line-length=120 .
-
-lint:
-	dart analyze
 
 test:
 	dart test unpub/test unpub_aws/test

@@ -13,6 +13,28 @@ Component mainElement(List<Component> children, {String? classes}) {
   );
 }
 
+/// Layout shell for [ShellRoute]. Uses a single root element (required for
+/// client hydration) with [display: contents] so children still lay out as
+/// direct descendants of `body`.
+class AppShell extends StatelessComponent {
+  const AppShell({required this.child, super.key});
+
+  final Component child;
+
+  @override
+  Component build(BuildContext context) {
+    return div(
+      classes: 'app-shell',
+      [
+        const SiteHeader(),
+        const SearchBanner(),
+        div(classes: 'container', [child]),
+        const SiteFooter(),
+      ],
+    );
+  }
+}
+
 class SiteHeader extends StatelessComponent {
   const SiteHeader({super.key});
 

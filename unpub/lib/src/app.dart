@@ -20,7 +20,6 @@ import 'package:unpub/src/models.dart';
 import 'package:unpub/src/package_store.dart';
 import 'package:unpub_api/models.dart';
 import 'package:unpub_web/server.dart' as web;
-import 'package:unpub_web/static_assets.dart' as web_assets;
 
 import 'utils.dart';
 
@@ -119,18 +118,12 @@ class App {
   }
 
   Future<HttpServer> serve([String host = '0.0.0.0', int port = 4000]) async {
-    final staticHandler = web_assets.staticAssetsHandler();
     late shelf.Handler webHandler;
 
     FutureOr<shelf.Response> dispatchHandler(shelf.Request request) async {
       final apiResponse = await router.call(request);
       if (apiResponse.statusCode != 404 || _isBackendPath(request.url.path)) {
         return apiResponse;
-      }
-
-      final staticResponse = await staticHandler(request);
-      if (staticResponse.statusCode != 404) {
-        return staticResponse;
       }
 
       return webHandler(request);
