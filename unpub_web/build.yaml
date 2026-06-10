@@ -3,7 +3,7 @@ targets:
     builders:
       build_web_compilers|entrypoint:
         generate_for:
-          - web/main.clients.dart
+          - web/main.client.dart
         enabled: true
         options:
           compiler: dart2js

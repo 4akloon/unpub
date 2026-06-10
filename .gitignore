@@ -8,3 +8,10 @@
 
 # pubspec.lock
 */pubspec.lock
+
+# Local environment secrets
+.env
+.env.local
+
+# Browser automation artifacts
+.playwright-mcp/

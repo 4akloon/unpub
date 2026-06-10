@@ -275,6 +275,18 @@ void main() {
     });
 
     group('add', () {
+      test('missing email', () async {
+        final response = await addUploaderRaw(package0);
+        expect(response.statusCode, HttpStatus.badRequest);
+        expect(apiErrorMessage(response), contains('missing email'));
+      });
+
+      test('invalid request body', () async {
+        final response = await addUploaderRaw(package0, body: '%');
+        expect(response.statusCode, HttpStatus.badRequest);
+        expect(apiErrorMessage(response), contains('invalid request body'));
+      });
+
       test('already exists', () async {
         final response = await addUploader(package0, email0);
         expect(apiErrorMessage(response), contains('email already exists'));

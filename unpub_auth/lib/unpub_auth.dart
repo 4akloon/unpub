@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
@@ -14,10 +13,23 @@ const _tokenEndpoint = 'https://oauth2.googleapis.com/token';
 const _authEndpoint = 'https://accounts.google.com/o/oauth2/auth';
 const _scopes = ['openid', 'https://www.googleapis.com/auth/userinfo.email'];
 
-String get _identifier => utf8.decode(base64.decode(
-    'NDY4NDkyNDU2MjM5LTJja2wxdTB1dGloOHRzZWtnMGxpZ2NpY2VqYm8wbnZkLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29t'));
-String get _secret => utf8
-    .decode(base64.decode('R09DU1BYLUxHMWZTV052UjA0S0NrWVZRMTVGS3J1cGJ5bFk='));
+String get _identifier {
+  final value = Platform.environment['UNPUB_GOOGLE_OAUTH_CLIENT_ID'];
+  if (value == null || value.isEmpty) {
+    stderr.writeln('Missing env var: UNPUB_GOOGLE_OAUTH_CLIENT_ID');
+    exit(1);
+  }
+  return value;
+}
+
+String get _secret {
+  final value = Platform.environment['UNPUB_GOOGLE_OAUTH_CLIENT_SECRET'];
+  if (value == null || value.isEmpty) {
+    stderr.writeln('Missing env var: UNPUB_GOOGLE_OAUTH_CLIENT_SECRET');
+    exit(1);
+  }
+  return value;
+}
 
 enum Flow {
   login,
@@ -49,12 +61,10 @@ Future<void> migrate(Object? args) async {
     exit(1);
   }
 
-  final isValid =
-      oauth2.Credentials.fromJson(await File(args).readAsString()).isValid();
+  final isValid = oauth2.Credentials.fromJson(await File(args).readAsString()).isValid();
   if (isValid) {
     await File(args).copy(Utils.credentialsFilePath);
-    Utils.stdoutPrint(
-        'Migrate from $args success.\nNew credentials file is saved at ${Utils.credentialsFilePath}');
+    Utils.stdoutPrint('Migrate from $args success.\nNew credentials file is saved at ${Utils.credentialsFilePath}');
     return;
   }
 }
@@ -69,8 +79,10 @@ Future<void> getToken() async {
   } else {
     /// unpub-credentials.json is not exist or invalid.
     /// We should get a new Credentials file.
-    Utils.stdoutPrint('${Utils.credentialsFilePath} is not found or invalid.'
-        '\nPlease call unpub_auth login first.');
+    Utils.stdoutPrint(
+      '${Utils.credentialsFilePath} is not found or invalid.'
+      '\nPlease call unpub_auth login first.',
+    );
     exit(1);
   }
   return;
@@ -90,11 +102,13 @@ void writeNewCredentials(oauth2.Credentials credentials) {
 /// Refresh `accessToken` of credentials
 Future<void> refreshCredentials(oauth2.Credentials credentials) async {
   final client = oauth2.Client(
-      oauth2.Credentials.fromJson(credentials.toJson()),
-      identifier: _identifier,
-      secret: _secret, onCredentialsRefreshed: (credential) async {
-    writeNewCredentials(credential);
-  });
+    oauth2.Credentials.fromJson(credentials.toJson()),
+    identifier: _identifier,
+    secret: _secret,
+    onCredentialsRefreshed: (credential) async {
+      writeNewCredentials(credential);
+    },
+  );
   await client.refreshCredentials();
   Utils.stdoutPrint(client.credentials.accessToken);
 }
@@ -102,8 +116,13 @@ Future<void> refreshCredentials(oauth2.Credentials credentials) async {
 /// Create a client with authorization.
 Future<oauth2.Client> clientWithAuthorization() async {
   final grant = oauth2.AuthorizationCodeGrant(
-      _identifier, Uri.parse(_authEndpoint), Uri.parse(_tokenEndpoint),
-      secret: _secret, basicAuth: false, httpClient: http.Client());
+    _identifier,
+    Uri.parse(_authEndpoint),
+    Uri.parse(_tokenEndpoint),
+    secret: _secret,
+    basicAuth: false,
+    httpClient: http.Client(),
+  );
 
   final completer = Completer();
 
@@ -124,23 +143,21 @@ Future<oauth2.Client> clientWithAuthorization() async {
     Utils.stdoutPrint('Authorization received, processing...');
 
     /// Redirect to authorized page.
-    final resp =
-        shelf.Response.found('http://localhost:${server.port}/authorized');
+    final resp = shelf.Response.found('http://localhost:${server.port}/authorized');
 
-    completer.complete(
-        grant.handleAuthorizationResponse(Utils.queryToMap(request.url.query)));
+    completer.complete(grant.handleAuthorizationResponse(Utils.queryToMap(request.url.query)));
 
     return resp;
   });
 
-  final authUrl = '${grant
-          .getAuthorizationUrl(Uri.parse('http://localhost:${server.port}'),
-              scopes: _scopes)}&access_type=offline&approval_prompt=force';
+  final authUrl =
+      '${grant.getAuthorizationUrl(Uri.parse('http://localhost:${server.port}'), scopes: _scopes)}&access_type=offline&approval_prompt=force';
   Utils.stdoutPrint(
-      'unpub needs your authorization to upload packages on your behalf.\n'
-      'In a web browser, go to $authUrl\n'
-      'Then click "Allow access".\n\n'
-      'Waiting for your authorization...');
+    'unpub needs your authorization to upload packages on your behalf.\n'
+    'In a web browser, go to $authUrl\n'
+    'Then click "Allow access".\n\n'
+    'Waiting for your authorization...',
+  );
 
   final client = await completer.future;
   Utils.stdoutPrint('Successfully authorized.\n');
@@ -153,8 +170,10 @@ Future<oauth2.Credentials?> readCredentialsFromLocal() async {
 
   final exists = await credentialFile.exists();
   if (!exists) {
-    Utils.stdoutPrint('${Utils.credentialsFilePath} is not exist.\n'
-        'Please run `unpub_auth login` first');
+    Utils.stdoutPrint(
+      '${Utils.credentialsFilePath} is not exist.\n'
+      'Please run `unpub_auth login` first',
+    );
     return null;
   }
 

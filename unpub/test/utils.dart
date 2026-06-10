@@ -74,6 +74,14 @@ Future<http.Response> addUploader(String name, String email) {
   );
 }
 
+Future<http.Response> addUploaderRaw(String name, {String? body}) {
+  return http.post(
+    baseUri.resolve('/api/packages/${Uri.encodeComponent(name)}/uploaders'),
+    body: body,
+    headers: {HttpHeaders.contentTypeHeader: 'application/x-www-form-urlencoded'},
+  );
+}
+
 Future<http.Response> removeUploader(String name, String email) {
   return http.delete(
     baseUri.resolve(

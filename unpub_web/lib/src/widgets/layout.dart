@@ -1,7 +1,9 @@
+import 'package:jaspr/dom.dart';
 import 'package:jaspr/jaspr.dart';
+import 'package:jaspr_riverpod/jaspr_riverpod.dart';
 import 'package:jaspr_router/jaspr_router.dart';
 import 'package:universal_web/web.dart' as web;
-import 'package:unpub_web/src/app_state.dart';
+import 'package:unpub_web/src/state/app_providers.dart';
 
 Component mainElement(List<Component> children, {String? classes}) {
   return Component.element(
@@ -52,38 +54,16 @@ class SiteHeader extends StatelessComponent {
   }
 }
 
-class SearchBanner extends StatefulComponent {
+class SearchBanner extends StatelessComponent {
   const SearchBanner({super.key});
 
-  @override
-  State<SearchBanner> createState() => _SearchBannerState();
-}
-
-class _SearchBannerState extends State<SearchBanner> {
-  @override
-  void initState() {
-    super.initState();
-    if (kIsWeb) {
-      AppState.instance.addListener(_onStateChanged);
-    }
-  }
-
-  @override
-  void dispose() {
-    AppState.instance.removeListener(_onStateChanged);
-    super.dispose();
-  }
-
-  void _onStateChanged() {
-    setState(() {});
-  }
-
-  void _submit(web.Event event) {
+  void _submit(BuildContext context, web.Event event) {
     event.preventDefault();
-    if (AppState.instance.keyword.isEmpty) {
+    final keyword = context.read(searchKeywordProvider);
+    if (keyword.isEmpty) {
       return;
     }
-    final url = '/packages?q=${Uri.encodeQueryComponent(AppState.instance.keyword)}';
+    final url = '/packages?q=${Uri.encodeQueryComponent(keyword)}';
     final router = Router.maybeOf(context);
     if (router != null) {
       router.push(url);
@@ -94,6 +74,8 @@ class _SearchBannerState extends State<SearchBanner> {
 
   @override
   Component build(BuildContext context) {
+    final keyword = context.watch(searchKeywordProvider);
+
     return div(
       classes: '_banner-bg',
       [
@@ -106,7 +88,7 @@ class _SearchBannerState extends State<SearchBanner> {
                 form(
                   classes: 'search-bar',
                   action: '/packages',
-                  events: {'submit': _submit},
+                  events: {'submit': (event) => _submit(context, event)},
                   [
                     input(
                       type: InputType.text,
@@ -116,12 +98,12 @@ class _SearchBannerState extends State<SearchBanner> {
                         'placeholder': 'Search Dart packages',
                         'autocomplete': 'on',
                         'autofocus': 'autofocus',
-                        'value': AppState.instance.keyword,
+                        'value': keyword,
                       },
                       events: {
                         'input': (event) {
                           final target = event.target as web.HTMLInputElement?;
-                          AppState.instance.setKeyword(target?.value ?? '');
+                          context.read(searchKeywordProvider.notifier).state = target?.value ?? '';
                         },
                       },
                     ),

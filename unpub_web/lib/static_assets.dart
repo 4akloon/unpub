@@ -36,7 +36,7 @@ List<String> resolveWebAssetDirectories() {
   return candidates.where((candidate) => Directory(candidate).existsSync()).toList();
 }
 
-/// Serves Jaspr static assets (`styles.css`, `main.clients.dart.js`, etc.).
+/// Serves Jaspr static assets (`styles.css`, `main.client.dart.js`, etc.).
 Handler staticAssetsHandler() {
   final directories = resolveWebAssetDirectories();
   final handlers = directories.map(createStaticHandler).toList();

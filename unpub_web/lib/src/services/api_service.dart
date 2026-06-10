@@ -35,8 +35,7 @@ class ApiService {
     String path, [
     Map<String, dynamic> queryParameters = const {},
   ]) async {
-    final params = Map<String, dynamic>.from(queryParameters)
-      ..removeWhere((_, value) => value == null);
+    final params = Map<String, dynamic>.from(queryParameters)..removeWhere((_, value) => value == null);
 
     final uri = Uri.parse(baseUrl).replace(
       path: path,

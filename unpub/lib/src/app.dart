@@ -371,7 +371,19 @@ class App {
   @Route.post('/api/packages/<name>/uploaders')
   Future<shelf.Response> addUploader(shelf.Request req, String name) async {
     final body = await req.readAsString();
-    final email = Uri.splitQueryString(body)['email']!; // TODO: null
+
+    late final Map<String, String> form;
+    try {
+      form = Uri.splitQueryString(body);
+    } on FormatException {
+      return _badRequest('invalid request body');
+    }
+
+    final email = form['email']?.trim();
+    if (email == null || email.isEmpty) {
+      return _badRequest('missing email');
+    }
+
     final operatorEmail = await _getUploaderEmail(req);
     final package = await metaStore.queryPackage(name);
 

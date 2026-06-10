@@ -1,6 +1,7 @@
+import 'package:jaspr/dom.dart';
 import 'package:jaspr/server.dart';
 import 'package:unpub_web/app.dart';
-import 'package:unpub_web/jaspr_options.dart';
+import 'package:unpub_web/main.server.options.dart';
 import 'package:unpub_web/src/services/api_service.dart';
 
 Handler buildHandler({String apiBaseUrl = 'http://127.0.0.1:4000'}) {
@@ -30,6 +31,6 @@ void _ensureInitialized() {
   if (_initialized) {
     return;
   }
-  Jaspr.initializeApp(options: defaultJasprOptions);
+  Jaspr.initializeApp(options: defaultServerOptions);
   _initialized = true;
 }

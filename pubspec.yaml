@@ -12,4 +12,8 @@ workspace:
   - unpub_auth
 
 dev_dependencies:
-  lints: ^5.0.0
+  lints: ^6.1.0
+
+dependency_overrides:
+  # jaspr_riverpod 0.4.5 is incompatible with riverpod 3.3.x (Vsync API change).
+  riverpod: 3.2.1

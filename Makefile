@@ -7,7 +7,7 @@ dev-down:
 	docker compose down
 
 dev:
-	@test -f unpub_web/web/main.clients.dart.js || $(MAKE) build-web
+	@test -f unpub_web/web/main.client.dart.js || $(MAKE) build-web
 	UPLOADER_EMAIL=test@local.dev dart run unpub/bin/unpub.dart -p $(PORT)
 
 build-web:

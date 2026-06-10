@@ -1,11 +1,11 @@
+import 'package:jaspr/dom.dart';
 import 'package:jaspr/server.dart';
-
 import 'package:unpub_web/app.dart';
-import 'package:unpub_web/jaspr_options.dart';
+import 'package:unpub_web/main.server.options.dart';
 
 /// Server entrypoint used by jaspr_builder code generation.
 void main() {
-  Jaspr.initializeApp(options: defaultJasprOptions);
+  Jaspr.initializeApp(options: defaultServerOptions);
   runApp(
     Document(
       title: 'Unpub',

@@ -65,5 +65,4 @@ analyzer:
     invalid_annotation_target: ignore
 
 formatter:
-  page_width: 120
   trailing_commas: preserve

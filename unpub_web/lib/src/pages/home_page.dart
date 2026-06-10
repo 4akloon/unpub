@@ -1,9 +1,10 @@
+import 'package:jaspr/dom.dart';
 import 'package:jaspr/jaspr.dart';
+import 'package:jaspr_riverpod/jaspr_riverpod.dart';
 import 'package:jaspr_router/jaspr_router.dart';
 import 'package:unpub_api/models.dart';
-
-import 'package:unpub_web/src/app_state.dart';
 import 'package:unpub_web/src/services/api_service.dart';
+import 'package:unpub_web/src/state/app_providers.dart';
 import 'package:unpub_web/src/widgets/layout.dart';
 import 'package:unpub_web/src/widgets/loading_placeholder.dart';
 
@@ -31,12 +32,12 @@ class _HomePageState extends State<HomePage> with PreloadStateMixin {
   }
 
   Future<void> _load() async {
-    AppState.instance.setLoading(true);
+    context.read(globalLoadingProvider.notifier).state = true;
     try {
       final data = await apiService.fetchPackages(size: 15);
       setState(() => _data = data);
     } finally {
-      AppState.instance.setLoading(false);
+      context.read(globalLoadingProvider.notifier).state = false;
     }
   }
 
@@ -81,8 +82,7 @@ class _HomePageState extends State<HomePage> with PreloadStateMixin {
                       p(
                         classes: 'metadata',
                         [
-                          for (final tag in package.tags)
-                            span(classes: 'package-tag', [.text(tag)]),
+                          for (final tag in package.tags) span(classes: 'package-tag', [.text(tag)]),
                         ],
                       ),
                       p(classes: 'description', [.text(package.description ?? '')]),

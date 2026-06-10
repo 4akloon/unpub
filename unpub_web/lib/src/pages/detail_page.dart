@@ -1,11 +1,12 @@
 import 'package:intl/intl.dart';
+import 'package:jaspr/dom.dart';
 import 'package:jaspr/jaspr.dart';
+import 'package:jaspr_riverpod/jaspr_riverpod.dart';
 import 'package:jaspr_router/jaspr_router.dart';
 import 'package:markdown/markdown.dart' as md;
 import 'package:unpub_api/models.dart';
-
-import 'package:unpub_web/src/app_state.dart';
 import 'package:unpub_web/src/services/api_service.dart';
+import 'package:unpub_web/src/state/app_providers.dart';
 import 'package:unpub_web/src/widgets/layout.dart';
 import 'package:unpub_web/src/widgets/loading_placeholder.dart';
 
@@ -68,12 +69,12 @@ class _DetailPageState extends State<DetailPage> with PreloadStateMixin {
   }
 
   Future<void> _load() async {
-    AppState.instance.setLoading(true);
+    context.read(globalLoadingProvider.notifier).state = true;
     try {
       await _fetchPackage();
       setState(() {});
     } finally {
-      AppState.instance.setLoading(false);
+      context.read(globalLoadingProvider.notifier).state = false;
     }
   }
 
@@ -161,8 +162,7 @@ class _DetailPageState extends State<DetailPage> with PreloadStateMixin {
                 div(
                   classes: 'tags',
                   [
-                    for (final tag in package.tags)
-                      span(classes: 'package-tag', [.text(tag)]),
+                    for (final tag in package.tags) span(classes: 'package-tag', [.text(tag)]),
                   ],
                 ),
               ],
@@ -186,12 +186,12 @@ class _DetailPageState extends State<DetailPage> with PreloadStateMixin {
                 section(
                   classes: _activeTab == 0 ? 'tab-content markdown-body -active' : 'tab-content markdown-body',
                   id: 'readme',
-                  [if (readmeHtml != null) raw(readmeHtml)],
+                  [if (readmeHtml != null) RawText(readmeHtml)],
                 ),
                 section(
                   classes: _activeTab == 1 ? 'tab-content markdown-body -active' : 'tab-content markdown-body',
                   id: 'changelog',
-                  [if (changelogHtml != null) raw(changelogHtml)],
+                  [if (changelogHtml != null) RawText(changelogHtml)],
                 ),
                 section(
                   classes: _activeTab == 2 ? 'tab-content -active' : 'tab-content',
@@ -205,7 +205,11 @@ class _DetailPageState extends State<DetailPage> with PreloadStateMixin {
                               [
                                 th([const .text('Version')]),
                                 th([const .text('Uploaded')]),
-                                th(classes: 'documentation', attributes: {'width': '60'}, [const .text('Documentation')]),
+                                th(
+                                  classes: 'documentation',
+                                  attributes: {'width': '60'},
+                                  [const .text('Documentation')],
+                                ),
                                 th(classes: 'archive', attributes: {'width': '60'}, [const .text('Archive')]),
                               ],
                             ),
